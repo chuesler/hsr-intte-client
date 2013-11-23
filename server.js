@@ -4,7 +4,6 @@ var io = require('socket.io');
 var less = require('less');
 var fs = require('fs');
 
-
 var User = require('./user.js');
 var Link = require('./link.js');
 var Comment = require('./comment.js');
@@ -23,13 +22,24 @@ app.use(express.cookieParser());
 app.use(express.session({secret: '2234567890QWERTY'}));
 app.use(app.router);
 
+
+var clientCssFile = 'client.less';
 var clientCss = '';
-fs.readFile('./client.less', { 'encoding': 'utf-8' }, function(err, data){
-    if (err) throw err;
-    less.render(data, function(e, css){
-        if (e) throw e;
-        clientCss = css;
-    });
+function renderCss(){
+    fs.readFile(clientCssFile, { 'encoding': 'utf-8' }, function(err, data){
+        if (err) throw err;
+        less.render(data, function(e, css){
+            if (e) throw e;
+            clientCss = css;
+        });
+    });    
+}
+renderCss();
+fs.watch('.', function(event, filename){ // re-render css if it changes
+    // watch directory instead of file because of editors using tempfile -> rename for atomicity (watch works on inodes on linux)
+    if (filename === clientCssFile){
+        renderCss();
+    }
 });
 
 

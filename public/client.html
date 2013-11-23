@@ -5,10 +5,9 @@
     <title>Reddit Clone</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 
-    <link href="client.css" type="text/css" rel="stylesheet" />
     <link href="Libs/bootstrap/css/bootstrap.min.css" rel="stylesheet" media="screen"/>
-    
     <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css" rel="stylesheet"/>
+    <link href="client.css" type="text/css" rel="stylesheet" />
 
     <script src="Libs/doT/doT.js"></script>
     <script src="Libs/jquery-2.0.3.js"></script>
@@ -17,16 +16,16 @@
 
     <script src="core.js"></script>
     <script src="dataService.js"></script>
-    <script src="init.js"></script>  
+    <script src="init.js"></script>
 
     <script id="template-link" type="text/template">
-        <div class="container">
-            <div class="panel-heading">
-                <a id="link-vote-up-{{=it.id}}" href="#"><img src="assets/arrow_up.png" /></a>
-                <p>0</p>
-                <a id="link-vote-down-{{=it.id}}" href="#"><img src="assets/arrow_down.png" /></a>
+        <div class="link container">
+            <div class="col-md-1">
+                <a id="link-vote-up-{{=it.id}}" href="entry/{{=it.id}}/up"><img src="assets/arrow_up.png" /></a>
+                <p>{{=it.rating.value}}</p>
+                <a id="link-vote-down-{{=it.id}}" href="entry/{{=it.id}}/down"><img src="assets/arrow_down.png" /></a>
             </div>
-            <div class="detail">
+            <div class="panel-heading col-md-2">
                 <h2><a class="external" href="{{=it.url}}">{{=it.title}}</a></h2>
                 <p>
                     <img src="assets/comments.png" />
@@ -35,11 +34,16 @@
             </div>
         </div>
     </script>
+
 </head>
-    <body>    
-
+<body>
+    <nav class="navbar navbar-default navbar-fixed-top container" role="navigation">
+        <ul class="nav navbar-nav">
+            <li><a href="">Submit Link</a></li>
+            <li></li>
+        </ul>
+    </nav>
     <div class="container" id="links"></div>
-
-        <script src="ui.js"></script>
-    </body>
+    <script src="ui.js"></script>
+</body>
 </html>
