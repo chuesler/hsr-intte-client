@@ -1,0 +1,14 @@
+<div class="container">
+    <div class="panel-heading">
+    	<a id="link-vote-up-{{=it.id}}" href="#"><img src="assets/arrow_up.png" /></a>
+    	<p>{{=it.rating.value}}</p>
+    	<a id="link-vote-down-{{=it.id}}" href="#"><img src="assets/arrow_down.png" /></a>
+    </div>
+	<div class="detail">
+		<h2><a class="external" href="{{=it.url}}">{{=it.title}}</a></h2>
+		<p>
+			<img src="assets/comments.png" />
+			<a id="link-comment-{{=it.id}}" href="#">Comment</a>
+		</p>
+	</div>
+</div>
