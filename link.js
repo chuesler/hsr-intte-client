@@ -9,5 +9,5 @@ module.exports = function Link(id, title, author, url) {
     this.createTimeDisplay = this.createTime.toLocaleDateString() + " : " + this.createTime.toLocaleTimeString();
     this.rating = new Rating();
     this.comments = [];
-    this.voters = [];
 };
+

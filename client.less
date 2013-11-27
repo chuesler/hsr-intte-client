@@ -2,13 +2,37 @@ body {
 	padding-top: 70px; // to avoid navbar overlapping
 }
 
-div.link {
-	img {
-		height: 30px;
-		width: 30px;
+div{
+	&.link {
+		margin-bottom: 1em;
+		div h2 {
+			margin-top: 0;
+		}
+		img {
+			height: 30px;
+			width: 30px;
+		}
+		p img {
+			height: 18px;
+			width: 20;
+		}
 	}
-	p img {
-		height: 18px;
-		width: 20;
+
+	&.dropdown-menu {
+		padding: 15px; 
+		padding-bottom: 0px;
+		width: 15em;
+		form input {
+			margin-bottom: 15px;
+		}
 	}
+}
+
+.center {
+	text-align: center;
+}
+
+p[id|="link-rating"] {
+	margin-top: 0.2em;
+	margin-bottom: 0.2em;
 }

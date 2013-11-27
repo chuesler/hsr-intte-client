@@ -1,12 +1,17 @@
-﻿(function ($) {
-    $.support.cors = true;
-    //TODO create db service
-    //window.data = $.fn.DataService();  //exist till the site is changed
-    //sessionStorage.dataService = $.fn.DataService();  //stores data for one session
-    //localStorage.dataService = $.fn.DataService();  //stores data with no expiration date
-    
-    $.ajaxSetup({
-        cache: false
+﻿(function () {
+
+    var root = this;
+
+    requirejs.config({
+    	paths: {
+    		jquery: 'Libs/jquery-2.0.3',
+    		doT: 'Libs/doT',
+    		bootstrap: 'Libs/bootstrap/js/bootstrap.min.js'
+    	}
     });
 
-})(jQuery);
+})();
+
+define(['ui'], function(ui) {
+	ui.init();
+});
