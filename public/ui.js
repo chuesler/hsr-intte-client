@@ -1,4 +1,7 @@
-﻿define('ui', ['dataservice', 'jquery', 'doT', 'core'], function(dataservice, $, doT){
+﻿define('ui', ['dataservice', 'jquery', 'doT', 'core', 'bootstrap'], function(dataservice, $, doT){
+
+	var templates = {};
+	templates.link = doT.template($("#template-link").text());
 
 	var ui = {
 		templates: {},
@@ -13,20 +16,21 @@
 			$("#nav-login").show();
 			$("#nav-logout").hide();
 		},
-		updateLinks: function(){
+		showEntries: function(){
 			var that = this;
-			$.getJSON("entries/", function(data){
-				var newLinks = $("<div class=\"container\" id=\"container\"/>");
+			dataservice.entry.getAll(function(data){
+				var content = $("#content");
+				content.empty();
+
 				$.each(data, function(index, entry) {
-					newLinks.append(that.templates.links(entry));
+					content.append(templates.link(entry));
 				});
-				$("#content").replaceWith(newLinks);
 
 				$("a[id|=link-vote]").click(function(){
 					var linkId = $(this).attr("id");
 					var matches = linkId.match(/link-vote-(up|down)-(\d+)/);
 					$.post("entry/" + matches[2] + "/" + matches[1], function(){
-						jQuery.getJSON("entry/" + matches[2], function(data){
+						$.getJSON("entry/" + matches[2], function(data){
 							$("#link-rating-" + matches[2]).text(data.rating.value);
 						});
 					});
@@ -34,32 +38,24 @@
 			});
 		},
 		init: function(){
-			this.templates.links = doT.template($("#template-link").text());
 			var that = this;
 
-			$.getJSON("login", function(data){ // reset components according to login status
-				if (typeof(data) == "string" && data !== "") {
-					that.loggedIn(data);
-				} else {
-					that.loggedOut();
-				}
+			$(document).on("login", this.loggedIn);
+			$(document).on("logout", this.loggedOut);
+
+			dataservice.user.isLoggedIn(function(loggedIn) { // reset components according to login status
+				if (loggedIn) { that.loggedIn(dataservice.user.loggdInUser); } 
+				else { that.loggedOut(); }
 			});
 
-			this.updateLinks();
-
 			$("#login").submit(function(e){
-				var user = $("#login_name").val();
-				jQuery.post("login", { name: user, password: $("#login_password").val() }, function(data){
-					if (data === true){
-						that.loggedIn(user);
-					}
-					$('.dropdown.open .dropdown-toggle').dropdown('toggle');
-				});
+				dataservice.user.login($("#login_name").val(), $("#login_password").val());
+				$('.dropdown.open .dropdown-toggle').dropdown('toggle'); // close dropdown
 				e.preventDefault();
 			});
 
 			$("#logout").submit(function(e){
-				jQuery.post("logout", app.loggedOut);
+				$.post("logout", function(data) { that.loggedOut(); });
 				e.preventDefault();		
 			});
 		}

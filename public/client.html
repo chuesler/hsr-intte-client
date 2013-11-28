@@ -14,9 +14,9 @@
     <script id="template-link" type="text/template">
         <div class="link container">
             <div class="col-md-1 center">
-                <a id="link-vote-up-{{=it.id}}" href="#"><img src="assets/arrow_up.png" /></a>
+                <a id="link-vote-up-{{=it.id}}" href="#/"><img src="assets/arrow_up.png" /></a>
                 <p id="link-rating-{{=it.id}}">{{=it.rating.value}}</p>
-                <a id="link-vote-down-{{=it.id}}" href="#"><img src="assets/arrow_down.png" /></a>
+                <a id="link-vote-down-{{=it.id}}" href="#/"><img src="assets/arrow_down.png" /></a>
             </div>
             <div class="panel-heading col-md-2">
                 <h2><a class="external" href="{{=it.url}}">{{=it.title}}</a></h2>
@@ -38,7 +38,7 @@
         <ul id="nav-logout" class="nav navbar-nav navbar-right" style="display:none">
             <li></li>
             <li>
-                <form class="navbar-form" id="logout">
+                <form class="navbar-form" id="logout" method="post" action="logout">
                     <input class="btn btn-primary" type="submit" value="Log out" />
                 </form>
             </li>
@@ -48,7 +48,7 @@
             <li class="dropdown">
                 <a class="dropdown-toggle" data-toggle="dropdown">Login <b class="caret"></b></a>
                 <div class="dropdown-menu">
-                    <form id="login" accept-charset="utf-8">
+                    <form id="login" action="login" method="post" accept-charset="utf-8">
                         <label for="login_name">Username</label>
                         <input id="login_name" class="form-control" type="text" name="name" size="30" />
                         <label for="login_password">Password</label>
