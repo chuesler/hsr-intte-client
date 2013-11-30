@@ -2,19 +2,22 @@
 
 	var dataservice = {
 		entry: {
-			getAll: function(callback) {
-				$.getJSON('entries', callback);
+			getAll: function() {
+				return $.getJSON('entries');
 			},
-			get: function(id, callback) {
-				$.getJSON('entry/' + id, callback);
+			get: function(id) {
+				return $.getJSON('entry/' + id);
+			},
+			post: function(title, url) {
+				$.post("entry", { title: title, url: url });
 			},
 			vote: function(id, direction){
-
+				$.post("entry/" + id + "/" + direction);
 			}
 		},
 		user: {
 			loggedInUser: undefined,
-			isLoggedIn: function(){
+			checkLoggedIn: function(){
 				var that = this;
 				if (!!this.loggedInUser) { 
 					$.event.trigger({ type: "login", name: loggedInUser });
@@ -34,6 +37,8 @@
 				$.post("login", { name: username, password: password }, function(success){
 					if (success === true) {
 						$.event.trigger({ type: "login", name: username });
+					} else {
+						$.event.trigger({ type: "login-failed" });
 					}
 				});
 			},
@@ -41,10 +46,15 @@
 				$.post("logout", function(data) { 
 					$.event.trigger({ type: "logout" }); 
 				});
+			},
+			register: function(username, password) {
+				$.post("register", {name: username, password: password }, function(success) {
+					$.event.trigger({ type: "register-" + (success ? "success" : "failed") });
+				});
 			}
 		}
 	}
 
 	return dataservice;
-    
+
 });
