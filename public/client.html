@@ -20,11 +20,27 @@
             </div>
             <div class="panel-heading col-md-offset-1">
                 <h2><a class="external" href="{{=it.url}}">{{=it.title}}</a></h2>
-                <span>submitted by {{=it.author}} {{=it.createTimeDisplay}}</span>
+                <small>By <strong>{{=it.author}}</strong> {{=it.createTimeDisplay}}</small>
                 <p>
                     <img src="assets/comments.png" />
                     <a id="link-comment-{{=it.id}}" href="#/entry/{{=it.id}}">Comment</a>
                 </p>
+            </div>
+        </div>
+    </script>
+    <script id="template-comment" type="text/template">
+        <div class="comment container row">
+            <div class="col-md-1 center">
+                <a id="comment-vote-up-{{=it.id}}" href="#/"><img src="assets/arrow_up.png" /></a>
+                <p id="comment-rating-{{=it.id}}">{{=it.rating.value}}</p>
+                <a id="comment-vote-down-{{=it.id}}" href="#/"><img src="assets/arrow_down.png" /></a>
+            </div>
+            <div>
+                <small>By <strong>{{=it.author}}</strong> {{=it.createTimeDisplay}}</small>
+                <p>{{=it.text}}</p>
+                <a href="#/reply/{{=it.id}}">Reply</a>
+                <div id="comment-children-{{=it.id}}" class="col-md-offset-1"></div>
+
             </div>
         </div>
     </script>
@@ -97,6 +113,9 @@
                 </div>
                 <input class="btn btn-primary" type="submit" value="Submit" />
             </form>
+        </div>
+        <div class="container hidden" id="showEntry">
+
         </div>
     </div>
 </body>

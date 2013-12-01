@@ -3,6 +3,7 @@
 	var templates = {};
 	templates.link = doT.template($("#template-link").text());
 	templates.message = doT.template($("#template-message").text());
+	templates.comment = doT.template($("#template-comment").text());
 
 	function showError(message) {
 		$("#content").prepend($(templates.message(message)).addClass("alert-danger"));
@@ -94,6 +95,25 @@
 		},
 		showEntry: function(id){
 			hideAll();
+			$("#showEntry").empty();
+			show("#showEntry");
+
+			dataservice.entry.get(id).then(function(link) {
+				$("#showEntry").append(templates.link(link)).append("<p/>");
+
+				var renderChildren = function(parentId, comment){
+					console.log("renderChildren", parentId, comment, $("comment-children-" + parentId));
+					$("#comment-children-" + parentId).append(templates.comment(comment));
+					$(comment.comments).each(function(index, child){ renderChildren(comment.id, child); });
+				};
+
+				$(link.comments).each(function(index, comment){
+					console.log("link.comments each", comment, !!comment);
+					$("#showEntry").append(templates.comment(comment));
+					$(comment.comments).each(function(index, child){ renderChildren(comment.id, child); });
+				});
+			});
+			
 		},
 		login: function() {
 			dataservice.user.login($("#login_name").val(), $("#login_password").val());
