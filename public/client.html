@@ -11,19 +11,19 @@
 
     <script data-main="init.js" src="Libs/require.js"></script>
 
-    <script id="template-link" type="text/template">
-        <div class="link container row">
-            <div class="col-md-1 center">
-                <a id="link-vote-up-{{=it.id}}" href="#/"><img src="assets/arrow_up.png" /></a>
-                <p id="link-rating-{{=it.id}}">{{=it.rating.value}}</p>
-                <a id="link-vote-down-{{=it.id}}" href="#/"><img src="assets/arrow_down.png" /></a>
+    <script id="template-entry" type="text/template">
+        <div class="entry container row">
+            <div class="col-md-1 col-xs-1 center">
+                <a id="entry-vote-up-{{=it.id}}" href="#/entry/{{=it.id}}/up"><img src="assets/arrow_up.png" /></a>
+                <p id="entry-rating-{{=it.id}}">{{=it.rating.value}}</p>
+                <a id="entry-vote-down-{{=it.id}}" href="#/entry/{{=it.id}}/up"><img src="assets/arrow_down.png" /></a>
             </div>
-            <div class="panel-heading col-md-offset-1">
+            <div class="panel-heading col-md-11 col-xs-11">
                 <h2><a class="external" href="{{=it.url}}">{{=it.title}}</a></h2>
                 <small>By <strong>{{=it.author}}</strong> {{=it.createTimeDisplay}}</small>
                 <p>
                     <img src="assets/comments.png" />
-                    <a id="link-comment-{{=it.id}}" href="#/entry/{{=it.id}}">Comment</a>
+                    <a id="entry-comment-{{=it.id}}" href="#/entry/{{=it.id}}">Comment</a>
                 </p>
             </div>
         </div>
@@ -31,16 +31,15 @@
     <script id="template-comment" type="text/template">
         <div class="comment container row">
             <div class="col-md-1 center">
-                <a id="comment-vote-up-{{=it.id}}" href="#/"><img src="assets/arrow_up.png" /></a>
+                <a id="comment-vote-up-{{=it.id}}" href="#/comment/{{=it.id}}/up"><img src="assets/arrow_up.png" /></a>
                 <p id="comment-rating-{{=it.id}}">{{=it.rating.value}}</p>
-                <a id="comment-vote-down-{{=it.id}}" href="#/"><img src="assets/arrow_down.png" /></a>
+                <a id="comment-vote-down-{{=it.id}}" href="#/comment/{{=it.id}}/up"><img src="assets/arrow_down.png" /></a>
             </div>
             <div>
                 <small>By <strong>{{=it.author}}</strong> {{=it.createTimeDisplay}}</small>
                 <p>{{=it.text}}</p>
-                <a href="#/reply/{{=it.id}}">Reply</a>
+                <a id="comment-reply-{{=it.id}}" href="#/reply/{{=it.id}}">Reply</a>
                 <div id="comment-children-{{=it.id}}" class="col-md-offset-1"></div>
-
             </div>
         </div>
     </script>
@@ -50,40 +49,61 @@
             <span>{{=it}}</span>
         </div>
     </script>
+    <script id="template-reply" type="text/template">
+        <div id="reply" class="col-md-offset-1">
+            <form id="replyform-{{=it.type}}-{{=it.id}}" class="form" action="#/reply/{{=it}}" method="post">
+                <div class="form-group">
+                    <textarea class="form-control" id="reply-text"></textarea>
+                </div>
+                <button class="btn btn-primary">Reply</button
+            </form>
+        </div>
+    </script>
 </head>
 <body>
     <nav class="navbar navbar-default navbar-fixed-top container" role="navigation">
-        <a class="navbar-brand" href="#/">Reddit Clone</a>
-        <ul class="nav navbar-nav navbar-left">
-            <li><a id="submitLink" class="btn">Submit Link</a></li>
-        </ul>
-        <ul id="nav-logout" class="nav navbar-nav navbar-right" style="display:none">
-            <li></li>
-            <li>
-                <form class="navbar-form" id="logout" method="post" action="#/logout">
-                    <input class="btn btn-primary" type="submit" value="Log out" />
-                </form>
-            </li>
-        </ul>
-        <ul id="nav-login" class="nav navbar-nav navbar-right" style="display:none">
-            <li><a id="register" href="#/register">Register</a></li>
-            <li class="dropdown">
-                <a class="dropdown-toggle" data-toggle="dropdown">Login <b class="caret"></b></a>
-                <div class="dropdown-menu">
-                    <form id="login" action="#/login" method="post" accept-charset="utf-8">
-                        <div class="form-group">
-                            <label for="login_name">Username</label>
-                            <input id="login_name" class="form-control" type="text" />
-                        </div>
-                        <div class="form-group">
-                            <label for="login_password">Password</label>
-                            <input id="login_password" type="password" class="form-control" />
-                        </div>
-                        <input class="btn btn-primary" type="submit" name="signin" value="Sign In" />
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="#/">Reddit Clone</a>
+        </div>
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav navbar-left">
+                <li><a id="submitLink" class="btn">Submit Link</a></li>
+                <li class="divider"></li>
+            </ul>
+            <ul id="nav-logout" class="nav navbar-nav navbar-right hidden">
+                <li id="user-name" class="navbar-text">Welcome, <span></span></li>
+                <li>
+                    <form class="navbar-form" id="logout" method="post" action="#/logout">
+                        <input class="btn btn-primary" type="submit" value="Log out" />
                     </form>
-                </div>
-            </li>
-        </ul>
+                </li>
+            </ul>
+            <ul id="nav-login" class="nav navbar-nav navbar-right hidden">
+                <li><a id="register" href="#/register">Register</a></li>
+                <li class="dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown">Login <b class="caret"></b></a>
+                    <div class="dropdown-menu">
+                        <form id="login" action="#/login" method="post" accept-charset="utf-8">
+                            <div class="form-group">
+                                <label for="login_name">Username</label>
+                                <input id="login_name" class="form-control" type="text" />
+                            </div>
+                            <div class="form-group">
+                                <label for="login_password">Password</label>
+                                <input id="login_password" type="password" class="form-control" />
+                            </div>
+                            <input class="btn btn-primary" type="submit" name="signin" value="Sign In" />
+                        </form>
+                    </div>
+                </li>
+            </ul>
+        </div>
     </nav>
     <div class="container" id="content">
         <div class="container hidden" id="entries"></div>
@@ -114,9 +134,7 @@
                 <input class="btn btn-primary" type="submit" value="Submit" />
             </form>
         </div>
-        <div class="container hidden" id="showEntry">
-
-        </div>
+        <div class="container hidden" id="showEntry"></div>
     </div>
 </body>
 </html>

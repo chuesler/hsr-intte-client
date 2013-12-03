@@ -79,7 +79,7 @@ function findUser(name) {
 function returnIndex(res, id, array) {
 	if (array.length <= id || id < 0) {
 		res.statusCode = 404;
-		return res.send('Error 404: No entry found');
+		return res.send('Error 404: Not found');
 	}
 	return res.json(array[id]);
 }
@@ -170,48 +170,69 @@ app.get('/entry/:id', function(req, res) {
 
 app.post('/entry/:id/up', checkAuth, function (req, res) {
 	log("post entry/" + req.params.id + "/up");
-	res.json(entries[req.params.id].rating._up(req.session.user_id));
-	io.sockets.emit('message', { action: "Rated" });
+	var entry = entries[req.params.id];
+	if (!!entry) {
+		res.json(entries[req.params.id].rating._up(req.session.user_id));
+		io.sockets.emit('message', { action: "Rated", type: "entry", id: req.params.id });
+	}
 });
 
 app.post('/entry/:id/down', checkAuth, function (req, res) {
 	log("post entry/" + req.params.id + "/down");
-	res.json(entries[req.params.id].rating._down(req.session.user_id));
-	io.sockets.emit('message', { action: "Rated" });
+	var entry = entries[req.params.id];
+	if (!!entry) {
+		res.json(entry.rating._down(req.session.user_id));
+		io.sockets.emit('message', { action: "Rated", type: "entry", id: req.params.id });
+	}
 });
 
 app.post('/entry/:id/comment', checkAuth, function (req, res) {
 	log("post entry/" + req.params.id + "/comment");
-	var newComment = new Comment(comments.length, req.body.text, users[req.session.user_id].name);
-	comments.push(newComment);
-
+	
 	var entry = entries[req.params.id];
-	entry.comments.push(newComment);
-	res.json(newComment);
-	io.sockets.emit('message', { action: "AddComment" });
+	if (!!entry) {
+		var newComment = new Comment(comments.length, req.body.text, users[req.session.user_id].name);
+		comments.push(newComment);
+		entry.comments.push(newComment);
+		res.json(newComment);
+		io.sockets.emit('message', { action: "AddComment", type: "entry", id: req.params.id });
+	}
+});
+
+app.get('/comment/:id', function(req, res){
+	log("get comment/" + req.params.id);
+	returnIndex(res, req.params.id, comments);
 });
 
 app.post('/comment/:id/', checkAuth, function (req, res) {
 	log("post comment/" + req.params.id);
-	var newComment = new Comment(comments.length, req.body.text, users[req.session.user_id].name);
-	comments.push(newComment);
 
-	var comment = comments[req.params.id];
-	comment.comments.push(newComment);
-	res.json(newComment);
-	io.sockets.emit('message', { action: "AddComment" });
+	var parent = comments[req.params.id];
+	if (!!parent) {
+		var newComment = new Comment(comments.length, req.body.text, users[req.session.user_id].name);
+		comments.push(newComment);
+		parent.comments.push(newComment);
+		res.json(newComment);
+		io.sockets.emit('message', { action: "AddComment", type: "comment", id: req.params.id });
+	}
 });
 
 app.post('/comment/:id/up', checkAuth, function (req, res) {
 	log("post comment/" + req.params.id + "/up");
-	res.json(comments[req.params.id].rating._up(req.session.user_id));
-	io.sockets.emit('message', { action: "Rated" });
+	var comment = comments[req.params.id];
+	if (!!comment) {
+		res.json(comment.rating._up(req.session.user_id));
+		io.sockets.emit('message', { action: "Rated", type: "comment", id: req.params.id });
+	}
 });
 
 app.post('/comment/:id/down', checkAuth, function (req, res) {
 	log("post comment/" + req.params.id + "/down");
-	res.json(comments[req.params.id].rating._down(req.session.user_id));
-	io.sockets.emit('message', { action: "Rated" });
+	var comment = comments[req.params.id];
+	if (!!comment) {
+		res.json(comment.rating._down(req.session.user_id));
+		io.sockets.emit('message', { action: "Rated", type: "comment", id: req.params.id });
+	}
 });
 
 app.post('/logout', function (req, res) {
@@ -224,6 +245,7 @@ app.use('/', express.static(__dirname + '/public/'));
 
 //socket:
 io = io.listen(app.listen(process.env.PORT || 4730));
+io.set('log level', 1);
 
 io.sockets.on('connection', function (socket) {
 	socket.emit('message', { action: 'connected' });

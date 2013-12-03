@@ -9,10 +9,24 @@
 				return $.getJSON('entry/' + id);
 			},
 			post: function(title, url) {
-				$.post("entry", { title: title, url: url });
+				return $.post("entry", { title: title, url: url });
 			},
 			vote: function(id, direction){
-				$.post("entry/" + id + "/" + direction);
+				return $.post("entry/" + id + "/" + direction);
+			},
+			comment: function(parentId, text) {
+				return $.post("entry/" + id + "/comment", { text: text });
+			}
+		},
+		comment: {
+			get: function(id) {
+				return $.getJSON("comment/" + id);
+			},
+			reply: function(parentId, text) {
+				return $.post("comment/" + id, { text: text });
+			},
+			vote: function(id, direction) {
+				return $.post("comment/" + id + "/" + direction);
 			}
 		},
 		user: {

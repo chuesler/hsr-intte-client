@@ -15,19 +15,23 @@ define(['ui', 'jquery', 'sammy', 'socket.io'], function(ui, $, sammy, io) {
 
 	var socket = io.connect('http://localhost:4730');
 	socket.on('message', function(message){
-		console.log('websocket', message.action);
+		// console.log('websocket', message);
+		$.event.trigger({ type: message.action.toLowerCase(), what: message.type, id: message.id });
 	});
 
 	var app = sammy("body", function(){
+		this.get("#/", function(ctx){ ui.showEntries();	});
+		this.post("#/login", function(ctx){ ui.login(); });
+		this.post("#/logout", function(ctx){ ui.logout(); });
+		this.get("#/register", function(ctx){ ui.showRegistration(); });
+		this.post("#/register", function(ctx){ ui.register(); });
+		this.get("#/submit", function(ctx){ ui.showSubmitEntry(); });
+		this.post("#/entry", function(ctx){ ui.postEntry(); this.redirect("#/"); });
+		this.get("#/entry/:id", function(ctx) { ui.showEntry(this.params['id']); });
+		this.get("#/reply/:id", function(ctx) { ui.showCommentInput(this.params['id'])});
 
-		this.get("#/", function(context){ context.log("entries"); ui.showEntries();	});
-		this.post("#/login", function(context){ context.log("login"); ui.login(); });
-		this.post("#/logout", function(context){ context.log("logout"); ui.logout(); });
-		this.get("#/register", function(context){ context.log("register"); ui.showRegistration(); });
-		this.post("#/register", function(context){ ui.register(); });
-		this.get("#/submit", function(context){ context.log("submit"); ui.showSubmitEntry(); });
-		this.post("#/entry", function(context){ context.log("post entry"); ui.postEntry(); this.redirect("#/"); });
-		this.get("#/entry/:id", function(context) { var id = this.params['id']; context.log("show entry", id); ui.showEntry(id); });
+		this.get("#/entry/:id/:direction", function(ctx){ ui.voteEntry(this.params['id'], this.params['direction']); });
+		this.get("#/comment/:id/:direction", function(ctx){ ui.voteComment(this.params['id'], this.params['direction']); });
 
 		this.bind("register-success", function() {
 			this.redirect("#/");

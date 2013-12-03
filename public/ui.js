@@ -1,9 +1,10 @@
 ﻿define('ui', ['dataservice', 'jquery', 'doT', 'sammy', 'core', 'bootstrap'], function(dataservice, $, doT, sammy){
 
 	var templates = {};
-	templates.link = doT.template($("#template-link").text());
+	templates.entry = doT.template($("#template-entry").text());
 	templates.message = doT.template($("#template-message").text());
 	templates.comment = doT.template($("#template-comment").text());
+	templates.reply = doT.template($("#template-reply").text());
 
 	function showError(message) {
 		$("#content").prepend($(templates.message(message)).addClass("alert-danger"));
@@ -15,21 +16,25 @@
 		setTimeout(function(){ msg.remove(); }, 5000); // autoremove after 5s
 	}
 
-	function hideAll() {
-		$("#content > .alert").remove();
-		$("#content > div").addClass("hidden");
+	function hide(what) {
+		$(what).addClass("hidden");
 	}
 
 	function show(what) {
 		$(what).removeClass("hidden");
 	}
 
+	function hideAll() {
+		$("#content > .alert").remove();
+		hide("#content > div");
+	}
+
 	function initLogin(ui) {
 		$(document).on("login", function(user) {
-			ui.user = user;
+			$("#user-name > span").text(user.name);
 			$("#submitLink").attr("href", "#/submit").removeClass("disabled");
-			$("#nav-login").hide();
-			$("#nav-logout").show();
+			hide("#nav-login");
+			show("#nav-logout");
 		});
 
 		$(document).on("login-failed", function(){
@@ -38,8 +43,8 @@
 		
 		$(document).on("logout", function (){
 			$("#submitLink").removeAttr("href").addClass("disabled");
-			$("#nav-login").show();
-			$("#nav-logout").hide();
+			show("#nav-login");
+			hide("#nav-logout");
 		});
 
 		dataservice.user.checkLoggedIn();
@@ -47,13 +52,11 @@
 
 	function initRegister(ui){
 		$(document).on("register-success", function(){
-			console.log("registration successful");
 			sammy("body").trigger("register-success");
 			showMessage("<strong>Registration successful</strong>!")
 		});
 
 		$(document).on("register-failed", function(){
-			console.log("registration failed");
 			showError("<strong>Registration failed</strong>: Make sure you provided both a username and a password, or try a different username.");
 		});
 	}
@@ -62,17 +65,7 @@
 		$("#entries").empty();
 
 		$.each(entries, function(index, entry) {
-			$("#entries").append(templates.link(entry));
-		});
-
-		$("a[id|=link-vote]").click(function(){
-			var linkId = $(this).attr("id");
-			var matches = linkId.match(/link-vote-(up|down)-(\d+)/);
-			$.post("entry/" + matches[2] + "/" + matches[1], function(){
-				$.getJSON("entry/" + matches[2], function(data){
-					$("#link-rating-" + matches[2]).text(data.rating.value);
-				});
-			});
+			$("#entries").append(templates.entry(entry));
 		});
 	}
 
@@ -96,25 +89,29 @@
 		showEntry: function(id){
 			hideAll();
 			$("#showEntry").empty();
-			show("#showEntry");
-
-			dataservice.entry.get(id).then(function(link) {
-				$("#showEntry").append(templates.link(link)).append("<p/>");
+			
+			dataservice.entry.get(id).then(function(entry) {
+				$("#showEntry").append(templates.entry(entry)).append("<p/>");
 
 				var renderChildren = function(parentId, comment){
-					console.log("renderChildren", parentId, comment, $("comment-children-" + parentId));
 					$("#comment-children-" + parentId).append(templates.comment(comment));
 					$(comment.comments).each(function(index, child){ renderChildren(comment.id, child); });
 				};
 
-				$(link.comments).each(function(index, comment){
-					console.log("link.comments each", comment, !!comment);
+				$(entry.comments).each(function(index, comment){
 					$("#showEntry").append(templates.comment(comment));
 					$(comment.comments).each(function(index, child){ renderChildren(comment.id, child); });
 				});
 			});
-			
+
+			show("#showEntry");
 		},
+		showCommentInput: function(id) {
+			$("#reply").remove();
+			$("#comment-reply-" + id).after(templates.reply(id));
+		},
+		voteEntry: dataservice.entry.vote,
+		voteComment: dataservice.comment.vote,
 		login: function() {
 			dataservice.user.login($("#login_name").val(), $("#login_password").val());
 			$('.dropdown.open .dropdown-toggle').dropdown('toggle'); // close dropdown
@@ -137,6 +134,18 @@
 				e.preventDefault();
 			});
 
+			$(document).on("rated", function(e){
+				var rating = $("#" + e.what + "-rating-" + e.id);
+				console.log("rating", e, rating);
+				if (rating.size()) {
+					var s = dataservice[e.what];
+					console.log("service", s);
+					dataservice[e.what].get(e.id).then(function(data){
+						console.log("result", data);
+						rating.text(data.rating.value);
+					});
+				}
+			});
 		}
 	};
 
