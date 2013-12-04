@@ -61,7 +61,7 @@
     </script>
 </head>
 <body>
-    <nav class="navbar navbar-default navbar-fixed-top container" role="navigation">
+    <nav class="navbar navbar-default navbar-static-top container" role="navigation">
         <div class="navbar-header">
             <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
                 <span class="sr-only">Toggle navigation</span>
@@ -74,10 +74,9 @@
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
             <ul class="nav navbar-nav navbar-left">
                 <li><a id="submitLink" class="btn">Submit Link</a></li>
-                <li class="divider"></li>
             </ul>
             <ul id="nav-logout" class="nav navbar-nav navbar-right hidden">
-                <li id="user-name" class="navbar-text">Welcome, <span></span></li>
+                <li><p class="navbar-text" id="user-name">Welcome, <span></span></p></li>
                 <li>
                     <form class="navbar-form" id="logout" method="post" action="#/logout">
                         <input class="btn btn-primary" type="submit" value="Log out" />
