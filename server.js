@@ -160,7 +160,7 @@ app.post('/entry', function(req, res) {
 
 	entries.push(newLink);
 	res.json(newLink);
-	io.sockets.emit('message', { action: "AddLink" });
+	io.sockets.emit('message', { action: "AddLink", id: newLink.id });
 });
 
 app.get('/entry/:id', function(req, res) {
