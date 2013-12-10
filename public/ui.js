@@ -29,22 +29,48 @@
 		hide("#content > div");
 	}
 
+	function applyLoginState() {
+		if (!!dataservice.user.loggedInUser) {
+			$("a[id*='-vote-']").each(function(_, element){
+				var [_, type, direction, id] = element.id.match(/(entry|comment)-vote-(up|down)-(\d+)/);
+				$(this).attr("href", "#/" + type + "/" + id + "/" + direction);
+				$(element).children("img").attr("src", "assets/arrow_" + direction + ".png");
+			});
+
+			$("a[id*='-reply-']").each(function(_, element){
+				var [_, type, id] = element.id.match(/(entry|comment)-reply-(\d+)/);
+				$(this).attr("href", "#/reply/" + type + "/" + id);
+			});
+		} else {
+			$("a[id*='-vote-']").removeAttr("href")
+				.filter("[id*='up']").children("img").attr("src", "assets/arrow_up_grey.png").end().end()
+				.filter("[id*='down']").children("img").attr("src", "assets/arrow_down_grey.png");
+			$("a[id*='-reply-']").removeAttr("href");
+			$("#reply").remove();
+		}
+	}
+
 	function initLogin(ui) {
 		$(document).on("login", function(user) {
 			$("#user-name > span").text(user.name);
 			$("#submitLink").attr("href", "#/submit").removeClass("disabled");
+			
 			hide("#nav-login");
 			show("#nav-logout");
+
+			applyLoginState();
 		});
 
 		$(document).on("login-failed", function(){
 			showError("<strong>Login failed</strong>: Invalid username or password.");
 		})
 		
-		$(document).on("logout", function (){
+		$(document).on("logout", function(){
 			$("#submitLink").removeAttr("href").addClass("disabled");
 			show("#nav-login");
 			hide("#nav-logout");
+
+			applyLoginState();
 		});
 
 		dataservice.user.checkLoggedIn();
@@ -73,6 +99,9 @@
 				$.each(data.sort(sortByRating), function(index, entry) {
 					$("#entries").append(templates.entry(entry));
 				});
+
+				applyLoginState();
+
 				show("#entries");
 			});
 		},
@@ -101,6 +130,8 @@
 					$("#showEntry").append(templates.comment(comment));
 					$(comment.comments).each(function(index, child){ renderChildren(comment.id, child); });
 				});
+
+				applyLoginState();
 
 				show("#showEntry");
 			});

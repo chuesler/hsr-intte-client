@@ -49,8 +49,10 @@
 				});
 			},
 			login: function(username, password) {
+				var that = this;
 				$.post("login", { name: username, password: password }, function(success){
 					if (success === true) {
+						that.loggedInUser = username;
 						$.event.trigger({ type: "login", name: username });
 					} else {
 						$.event.trigger({ type: "login-failed" });
@@ -58,7 +60,9 @@
 				});
 			},
 			logout: function() {
+				var that = this;
 				$.post("logout", function(data) { 
+					that.loggedInUser = undefined;
 					$.event.trigger({ type: "logout" }); 
 				});
 			},

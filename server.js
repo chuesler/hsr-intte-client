@@ -23,7 +23,6 @@ app.use(express.cookieParser());
 app.use(express.session({secret: '2234567890QWERTY'}));
 app.use(app.router);
 
-
 var clientCssFile = 'client.less';
 var clientCss = '';
 function renderCss(){
@@ -144,8 +143,6 @@ app.get('/users', function (req, res) {
 	log("get users: " + users.length);
 	res.json(users);
 });
-
-
 
 app.get('/entries', function (req, res) {
 	log("get entries: " + entries.length);
