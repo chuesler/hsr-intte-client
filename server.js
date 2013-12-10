@@ -195,7 +195,7 @@ app.post('/entry/:id/comment', checkAuth, function (req, res) {
 		comments.push(newComment);
 		entry.comments.push(newComment);
 		res.json(newComment);
-		io.sockets.emit('message', { action: "AddComment", type: "entry", id: req.params.id });
+		io.sockets.emit('message', { action: "AddComment", type: "entry", parent: req.params.id, id: newComment.id });
 	}
 });
 
@@ -204,7 +204,7 @@ app.get('/comment/:id', function(req, res){
 	returnIndex(res, req.params.id, comments);
 });
 
-app.post('/comment/:id/', checkAuth, function (req, res) {
+app.post('/comment/:id', checkAuth, function (req, res) {
 	log("post comment/" + req.params.id);
 
 	var parent = comments[req.params.id];
@@ -213,7 +213,7 @@ app.post('/comment/:id/', checkAuth, function (req, res) {
 		comments.push(newComment);
 		parent.comments.push(newComment);
 		res.json(newComment);
-		io.sockets.emit('message', { action: "AddComment", type: "comment", id: req.params.id });
+		io.sockets.emit('message', { action: "AddComment", type: "comment", parent: req.params.id, id: newComment.id });
 	}
 });
 

@@ -16,14 +16,14 @@
             <div class="col-md-1 col-xs-1 center">
                 <a id="entry-vote-up-{{=it.id}}" href="#/entry/{{=it.id}}/up"><img src="assets/arrow_up.png" /></a>
                 <p id="entry-rating-{{=it.id}}">{{=it.rating.value}}</p>
-                <a id="entry-vote-down-{{=it.id}}" href="#/entry/{{=it.id}}/up"><img src="assets/arrow_down.png" /></a>
+                <a id="entry-vote-down-{{=it.id}}" href="#/entry/{{=it.id}}/down"><img src="assets/arrow_down.png" /></a>
             </div>
             <div class="panel-heading col-md-11 col-xs-11">
                 <h2><a class="external" href="{{=it.url}}">{{=it.title}}</a></h2>
                 <small>By <strong>{{=it.author}}</strong> {{=it.createTimeDisplay}}</small>
                 <p>
                     <img src="assets/comments.png" />
-                    <a id="entry-comment-{{=it.id}}" href="#/entry/{{=it.id}}">Comment</a>
+                    <a id="entry-comment-{{=it.id}}" href="#/{{?it.single}}reply/{{?}}entry/{{=it.id}}">{{?it.single}}Reply{{??}}Comment{{?}}</a>
                 </p>
             </div>
         </div>
@@ -33,12 +33,12 @@
             <div class="col-md-1 center">
                 <a id="comment-vote-up-{{=it.id}}" href="#/comment/{{=it.id}}/up"><img src="assets/arrow_up.png" /></a>
                 <p id="comment-rating-{{=it.id}}">{{=it.rating.value}}</p>
-                <a id="comment-vote-down-{{=it.id}}" href="#/comment/{{=it.id}}/up"><img src="assets/arrow_down.png" /></a>
+                <a id="comment-vote-down-{{=it.id}}" href="#/comment/{{=it.id}}/down"><img src="assets/arrow_down.png" /></a>
             </div>
             <div>
                 <small>By <strong>{{=it.author}}</strong> {{=it.createTimeDisplay}}</small>
                 <p>{{=it.text}}</p>
-                <a id="comment-reply-{{=it.id}}" href="#/reply/{{=it.id}}">Reply</a>
+                <a id="comment-reply-{{=it.id}}" href="#/reply/comment/{{=it.id}}">Reply</a>
                 <div id="comment-children-{{=it.id}}" class="col-md-offset-1"></div>
             </div>
         </div>
@@ -50,8 +50,8 @@
         </div>
     </script>
     <script id="template-reply" type="text/template">
-        <div id="reply" class="col-md-offset-1">
-            <form id="replyform-{{=it.type}}-{{=it.id}}" class="form" action="#/reply/{{=it}}" method="post">
+        <div id="reply" class="col-md-offset-1" style="clear:both">
+            <form id="replyform-{{=it.type}}-{{=it.id}}" class="form" action="#/reply/{{=it.type}}/{{=it.id}}" method="post" accept-charset="utf-8">
                 <div class="form-group">
                     <textarea class="form-control" id="reply-text"></textarea>
                 </div>

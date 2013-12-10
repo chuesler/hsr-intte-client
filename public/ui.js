@@ -88,8 +88,10 @@
 		showEntry: function(id){
 			hideAll();
 			dataservice.entry.get(id).then(function(entry) {
-				$("#showEntry").empty().append(templates.entry(entry)).append("<p/>");
-
+				entry.single = true;
+				var newEntry = templates.entry(entry);
+				$("#showEntry").empty().append(newEntry).append("<p/>");
+			
 				var renderChildren = function(parentId, comment){
 					$("#comment-children-" + parentId).append(templates.comment(comment));
 					$(comment.comments.sort(sortByRating)).each(function(index, child){ renderChildren(comment.id, child); });
@@ -103,9 +105,10 @@
 				show("#showEntry");
 			});
 		},
-		showCommentInput: function(id) {
+		showCommentInput: function(type, id) {
 			$("#reply").remove();
-			$("#comment-reply-" + id).after(templates.reply(id));
+			$((type === "entry" ? "#showEntry > div:first-child div:last-child" : "#comment-reply-" + id))
+				.after(templates.reply({ type: type, id: id }));
 		},
 		voteEntry: dataservice.entry.vote,
 		voteComment: dataservice.comment.vote,
@@ -123,6 +126,10 @@
 		},
 		postEntry: function() {
 			dataservice.entry.post($("#entry_title").val(), $("#entry_url").val());
+		},
+		postComment: function(type, id) {
+			dataservice[type].comment(id, $("#reply-text").val());
+			$("#reply").remove();
 		},
 		init: function(){
 			initLogin(this);
@@ -153,6 +160,13 @@
 						entries.append(templates.entry(entry));
 					});
 				}
+			});
+
+			$(document).on("addcomment", function(e){
+				console.log("addcomment", e);
+				dataservice.comment.get(e.id).then(function(comment){
+					$(e.what === "entry" ? "#showEntry" : "#comment-children-" + e.parent).append(templates.comment(comment));	
+				});
 			});
 		}
 	};

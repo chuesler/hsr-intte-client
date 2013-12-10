@@ -15,15 +15,16 @@
 				return $.post("entry/" + id + "/" + direction);
 			},
 			comment: function(parentId, text) {
-				return $.post("entry/" + id + "/comment", { text: text });
+				return $.post("entry/" + parentId + "/comment", { text: text });
 			}
 		},
 		comment: {
 			get: function(id) {
 				return $.getJSON("comment/" + id);
 			},
-			reply: function(parentId, text) {
-				return $.post("comment/" + id, { text: text });
+			comment: function(parentId, text) {
+				console.log("post comment", parentId, text);
+				return $.post("comment/" + parentId, { text: text });
 			},
 			vote: function(id, direction) {
 				return $.post("comment/" + id + "/" + direction);
