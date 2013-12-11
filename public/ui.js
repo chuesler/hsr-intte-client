@@ -40,7 +40,7 @@
 				$(element).children("img").attr("src", "assets/arrow_" + matched[2] + ".png");
 			});
 
-			$("a[id*='-reply-']", to).each(function(_, element){
+			$("a[id*='-reply-']", to).removeClass("loggedOut").each(function(_, element){
 				var matched = element.id.match(/(entry|comment)-reply-(\d+)/); //[_, type, id]
 				$(this).attr("href", "#/reply/" + matched[1] + "/" + matched[2]);
 			});
@@ -48,7 +48,7 @@
 			$("a[id*='-vote-']", to).removeAttr("href")
 				.filter("[id*='up']").children("img").attr("src", "assets/arrow_up_grey.png").end().end()
 				.filter("[id*='down']").children("img").attr("src", "assets/arrow_down_grey.png");
-			$("a[id*='-reply-']", to).removeAttr("href");
+			$("a[id*='-reply-']", to).addClass("loggedOut").removeAttr("href");
 			$("#reply", to).remove();
 		}
 		return to;
