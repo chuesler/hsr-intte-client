@@ -29,25 +29,26 @@
 		hide("#content > div");
 	}
 
-	function applyLoginState() {
+	function applyLoginState(to) {
 		if (!!dataservice.user.loggedInUser) {
-			$("a[id*='-vote-']").each(function(_, element){
-				var [_, type, direction, id] = element.id.match(/(entry|comment)-vote-(up|down)-(\d+)/);
-				$(this).attr("href", "#/" + type + "/" + id + "/" + direction);
-				$(element).children("img").attr("src", "assets/arrow_" + direction + ".png");
+			$("a[id*='-vote-']", to).each(function(_, element){
+				var matched = element.id.match(/(entry|comment)-vote-(up|down)-(\d+)/); // [_, type, direction, id]
+				$(this).attr("href", "#/" + matched[1] + "/" + matched[3] + "/" + matched[2]);
+				$(element).children("img").attr("src", "assets/arrow_" + matched[2] + ".png");
 			});
 
-			$("a[id*='-reply-']").each(function(_, element){
-				var [_, type, id] = element.id.match(/(entry|comment)-reply-(\d+)/);
-				$(this).attr("href", "#/reply/" + type + "/" + id);
+			$("a[id*='-reply-']", to).each(function(_, element){
+				var matched = element.id.match(/(entry|comment)-reply-(\d+)/); //[_, type, id]
+				$(this).attr("href", "#/reply/" + matched[1] + "/" + matched[2]);
 			});
 		} else {
-			$("a[id*='-vote-']").removeAttr("href")
+			$("a[id*='-vote-']", to).removeAttr("href")
 				.filter("[id*='up']").children("img").attr("src", "assets/arrow_up_grey.png").end().end()
 				.filter("[id*='down']").children("img").attr("src", "assets/arrow_down_grey.png");
-			$("a[id*='-reply-']").removeAttr("href");
-			$("#reply").remove();
+			$("a[id*='-reply-']", to).removeAttr("href");
+			$("#reply", to).remove();
 		}
+		return to;
 	}
 
 	function initLogin(ui) {
@@ -118,8 +119,7 @@
 			hideAll();
 			dataservice.entry.get(id).then(function(entry) {
 				entry.single = true;
-				var newEntry = templates.entry(entry);
-				$("#showEntry").empty().append(newEntry).append("<p/>");
+				$("#showEntry").empty().append( templates.entry(entry)).append("<p/>");
 			
 				var renderChildren = function(parentId, comment){
 					$("#comment-children-" + parentId).append(templates.comment(comment));
@@ -188,7 +188,9 @@
 				var entries = $("#entries");
 				if (entries.length == 1 && !entries.hasClass("hidden")){
 					dataservice.entry.get(e.id).then(function(entry){
-						entries.append(templates.entry(entry));
+						var newEntry = $(templates.entry(entry));
+						newEntry = applyLoginState(newEntry);
+						entries.append(newEntry);
 					});
 				}
 			});
@@ -196,7 +198,9 @@
 			$(document).on("addcomment", function(e){
 				console.log("addcomment", e);
 				dataservice.comment.get(e.id).then(function(comment){
-					$(e.what === "entry" ? "#showEntry" : "#comment-children-" + e.parent).append(templates.comment(comment));	
+					var newComment = $(templates.comment(comment));
+					newComment = applyLoginState(newComment);
+					$(e.what === "entry" ? "#showEntry" : "#comment-children-" + e.parent).append(newComment);	
 				});
 			});
 		}
