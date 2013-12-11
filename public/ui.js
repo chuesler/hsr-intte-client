@@ -27,6 +27,9 @@
 	function hideAll() {
 		$("#content > .alert").remove();
 		hide("#content > div");
+
+		$("#entries").empty();
+		$("#showEntry").empty();
 	}
 
 	function applyLoginState(to) {
@@ -96,7 +99,6 @@
 		showEntries: function(){
 			hideAll();
 			dataservice.entry.getAll().then(function(data){
-				$("#entries").empty();
 				$.each(data.sort(sortByRating), function(index, entry) {
 					$("#entries").append(templates.entry(entry));
 				});
@@ -172,14 +174,10 @@
 			});
 
 			$(document).on("rated", function(e){
-				var rating = $("#" + e.what + "-rating-" + e.id);
-				console.log("rating", e, rating);
-				if (rating.size()) {
-					var s = dataservice[e.what];
-					console.log("service", s);
+				var node = $("#" + e.what + "-rating-" + e.id);
+				if (node.size()) {
 					dataservice[e.what].get(e.id).then(function(data){
-						console.log("result", data);
-						rating.text(data.rating.value);
+						node.html(data.rating.value);
 					});
 				}
 			});
