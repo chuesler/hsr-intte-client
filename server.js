@@ -60,13 +60,13 @@ var comments = [];
 entries.push(new Link(entries.length, "Title", "Author", "http://www.google.ch"));
 var comment = new Comment(0, "TestComment", "Author");
 comments.push(comment);
-var comment2 = new Comment(1, "Test Comment 2", "Author2");
-comments.push(comment2);
-comment.comments.push(comment2);
+// var comment2 = new Comment(1, "Test Comment 2", "Author2");
+// comments.push(comment2);
+// comment.comments.push(comment2);
 
-entries[0].comments.push(comment);
-entries[0].createTime = new Date(new Date().getTime() - 40 * 24 * 60 * 60 * 1000);
-entries.push(new Link(entries.length, "Title 2", "Author 2", "http://www.heise.de"));
+// entries[0].comments.push(comment);
+// entries[0].createTime = new Date(new Date().getTime() - 40 * 24 * 60 * 60 * 1000);
+// entries.push(new Link(entries.length, "Title 2", "Author 2", "http://www.heise.de"));
 
 //default user
 users.push(new User(users.length, "a", "a") );
